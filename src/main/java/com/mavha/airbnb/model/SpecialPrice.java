@@ -73,4 +73,14 @@ public class SpecialPrice implements Serializable {
     public void setPrice(double price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "SpecialPrice{" +
+                "id=" + id +
+                ", listing=" + listing +
+                ", date=" + date +
+                ", price=" + price +
+                '}';
+    }
 }

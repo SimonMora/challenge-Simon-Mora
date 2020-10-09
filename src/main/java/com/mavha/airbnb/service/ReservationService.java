@@ -5,5 +5,5 @@ import com.mavha.airbnb.model.ReservationResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface ReservationService {
-    ResponseEntity<Object> createAReservation(ReservationRequest reservationRequest, String listing_id);
+    ResponseEntity<Object> createReservation(ReservationRequest reservationRequest, String listing_id);
 }

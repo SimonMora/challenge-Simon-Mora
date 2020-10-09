@@ -76,4 +76,15 @@ public class User implements Serializable {
     public void setListings(List<Listing> listings) {
         this.listings = listings;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userID=" + userID +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", listings=" + listings +
+                '}';
+    }
 }

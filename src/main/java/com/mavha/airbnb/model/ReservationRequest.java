@@ -25,4 +25,12 @@ public class ReservationRequest {
     public void setCheckout(Date checkout) {
         this.checkout = checkout;
     }
+
+    @Override
+    public String toString() {
+        return "ReservationRequest{" +
+                "checkin=" + checkin +
+                ", checkout=" + checkout +
+                '}';
+    }
 }

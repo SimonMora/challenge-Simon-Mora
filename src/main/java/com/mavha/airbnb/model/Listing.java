@@ -170,4 +170,24 @@ public class Listing implements Serializable {
     public void setMonthly_discount(double monthly_discount) {
         this.monthly_discount = monthly_discount;
     }
+
+    @Override
+    public String toString() {
+        return "Listing{" +
+                "id=" + id +
+                ", owner=" + owner +
+                ", name='" + name + '\'' +
+                ", slug='" + slug + '\'' +
+                ", description='" + description + '\'' +
+                ", adults=" + adults +
+                ", children=" + children +
+                ", is_pets_allowed=" + is_pets_allowed +
+                ", base_price=" + base_price +
+                ", cleaning_fee=" + cleaning_fee +
+                ", image_url='" + image_url + '\'' +
+                ", weekly_discount=" + weekly_discount +
+                ", monthly_discount=" + monthly_discount +
+                ", special_prices=" + special_prices +
+                '}';
+    }
 }

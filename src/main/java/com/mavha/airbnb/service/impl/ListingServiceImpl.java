@@ -1,5 +1,6 @@
 package com.mavha.airbnb.service.impl;
 
+import com.mavha.airbnb.controller.ListingsController;
 import com.mavha.airbnb.model.Listing;
 import com.mavha.airbnb.model.SpecialPrice;
 import com.mavha.airbnb.model.User;
@@ -8,6 +9,8 @@ import com.mavha.airbnb.repository.SpecialPriceRepository;
 import com.mavha.airbnb.repository.UserRepository;
 import com.mavha.airbnb.service.ListingService;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,7 @@ import java.util.stream.Stream;
 @Service("listingServiceImpl")
 public class ListingServiceImpl implements ListingService {
 
+    Logger logger = LoggerFactory.getLogger(ListingServiceImpl.class);
 
     private ListingRepository listingRepository;
 
@@ -36,8 +40,10 @@ public class ListingServiceImpl implements ListingService {
             listing.setSlug(this.calculateSlug(newListing.getName()));
 
             listing = listingRepository.save(listing);
+            logger.info("Saved listing: {}", listing);
             return new ResponseEntity<>(listing, HttpStatus.CREATED);
         } catch (Exception e){
+            logger.error("Error in service.createNewListing with stackTrace: {} ", e.getStackTrace());
             JSONObject error = new JSONObject();
             error.put("code",1);
             error.put("message",e.getMessage());
@@ -50,6 +56,7 @@ public class ListingServiceImpl implements ListingService {
         try{
             return new ResponseEntity<>(listingRepository.findAll(),HttpStatus.OK);
         }catch (Exception e){
+            logger.error("Error in service.retrieveAllListing with stackTrace: {} ", e.getStackTrace());
             JSONObject error = new JSONObject();
             error.put("code",1);
             error.put("message",e.getMessage());
@@ -62,6 +69,7 @@ public class ListingServiceImpl implements ListingService {
         try{
             return new ResponseEntity<>(listingRepository.findById(UUID.fromString(listingId)).get(),HttpStatus.OK);
         } catch (Exception e){
+            logger.error("Error in service.retrieveOneListing with stackTrace: {} ", e.getStackTrace());
             JSONObject error = new JSONObject();
             error.put("code",1);
             error.put("message",e.getMessage());
@@ -77,6 +85,7 @@ public class ListingServiceImpl implements ListingService {
             response.put("id",listingId);
             return new ResponseEntity<>(response.toString(),HttpStatus.OK);
         }catch (Exception e){
+            logger.error("Error in service.deleteOneListing with stackTrace: {} ", e.getStackTrace());
             return new ResponseEntity<>(new JSONObject().put("error",e.getMessage()).toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -102,6 +111,7 @@ public class ListingServiceImpl implements ListingService {
            Listing updatedListing = listingRepository.saveAndFlush(listingToUpdate);
            return new ResponseEntity<>(updatedListing, HttpStatus.OK);
        } catch (Exception e){
+           logger.error("Error in service.modifyOneListing with stackTrace: {} ", e.getStackTrace());
            JSONObject error = new JSONObject();
            error.put("code",1);
            error.put("message",e.getMessage());
@@ -118,6 +128,7 @@ public class ListingServiceImpl implements ListingService {
 
             return new ResponseEntity<>(specialPriceSaved, HttpStatus.OK);
         }catch (Exception e){
+            logger.error("Error in service.addSpecialPriceToListing with stackTrace: {} ", e.getStackTrace());
             JSONObject error = new JSONObject();
             error.put("code",1);
             error.put("message",e.getMessage());
@@ -133,6 +144,7 @@ public class ListingServiceImpl implements ListingService {
             response.put("id",specialPriceId);
             return new ResponseEntity<>(response.toString(),HttpStatus.OK);
         }catch (Exception e){
+            logger.error("Error in service.deleteSpecialPrice with stackTrace: {} ", e.getStackTrace());
             return new ResponseEntity<>(new JSONObject().put("error",e.getMessage()).toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

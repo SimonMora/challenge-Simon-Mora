@@ -58,4 +58,15 @@ public class ReservationResponse {
     public void setTotal(double total) {
         this.total = total;
     }
+
+    @Override
+    public String toString() {
+        return "ReservationResponse{" +
+                "night_count=" + night_count +
+                ", night_price=" + night_price +
+                ", discount=" + discount +
+                ", cleaning_fee=" + cleaning_fee +
+                ", total=" + total +
+                '}';
+    }
 }

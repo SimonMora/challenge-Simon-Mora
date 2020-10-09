@@ -7,6 +7,8 @@ import com.mavha.airbnb.model.SpecialPrice;
 import com.mavha.airbnb.repository.ListingRepository;
 import com.mavha.airbnb.service.ReservationService;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,12 @@ import java.util.stream.Stream;
 @Service("reservationServiceImpl")
 public class ReservationServiceImpl implements ReservationService {
 
+    Logger logger = LoggerFactory.getLogger(ReservationServiceImpl.class);
+
     private ListingRepository listingRepository;
 
     @Override
-    public ResponseEntity<Object> createAReservation(ReservationRequest reservationRequest, String listing_id) {
+    public ResponseEntity<Object> createReservation(ReservationRequest reservationRequest, String listing_id) {
         try {
             Listing listing = listingRepository.findById(UUID.fromString(listing_id)).get();
 
@@ -38,10 +42,11 @@ public class ReservationServiceImpl implements ReservationService {
             return new ResponseEntity<>(new ReservationResponse(count, nightCost, discount, cleaningFee, total), HttpStatus.OK);
 
         } catch(Exception e){
+            logger.error("Error in service.createReservation with stackTrace: {} ", e.getStackTrace());
             JSONObject error = new JSONObject();
             error.put("code",1);
             error.put("message",e.getMessage());
-            return new ResponseEntity<>(error.toString(),HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(error.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
