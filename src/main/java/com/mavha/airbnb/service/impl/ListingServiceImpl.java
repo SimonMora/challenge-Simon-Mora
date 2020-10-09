@@ -21,21 +21,22 @@ import java.util.stream.Stream;
 public class ListingServiceImpl implements ListingService {
 
 
-    ListingRepository listingRepository;
+    private ListingRepository listingRepository;
 
-    SpecialPriceRepository specialPriceRepository;
+    private SpecialPriceRepository specialPriceRepository;
 
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
     public ResponseEntity<Object> createNewListing(Listing newListing) {
+        Listing listing = new Listing(newListing);
         try {
             Stream<User> userStream = userRepository.findAll().stream();
-            newListing.setOwner(userStream.findAny().get());
-            newListing.setSlug(newListing.getName().toLowerCase());
+            listing.setOwner(userStream.findAny().get());
+            listing.setSlug(this.calculateSlug(newListing.getName()));
 
-            Listing savedListing = listingRepository.save(newListing);
-            return new ResponseEntity<>(savedListing, HttpStatus.CREATED);
+            listing = listingRepository.save(listing);
+            return new ResponseEntity<>(listing, HttpStatus.CREATED);
         } catch (Exception e){
             JSONObject error = new JSONObject();
             error.put("code",1);
@@ -134,6 +135,10 @@ public class ListingServiceImpl implements ListingService {
         }catch (Exception e){
             return new ResponseEntity<>(new JSONObject().put("error",e.getMessage()).toString(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String calculateSlug(String name){
+        return name.toLowerCase().replaceAll(" ","-");
     }
 
     @Autowired

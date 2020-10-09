@@ -45,6 +45,19 @@ public class Listing implements Serializable {
     protected Listing() {
     }
 
+    public Listing(Listing listing){
+        this.name = listing.getName();
+        this.description = listing.getDescription();
+        this.adults = listing.getAdults();
+        this.children = listing.getChildren();
+        this.is_pets_allowed = listing.isIs_pets_allowed();
+        this.base_price = listing.getBase_price();
+        this.cleaning_fee = listing.getCleaning_fee();
+        this.image_url = listing.getImage_url();
+        this.weekly_discount = listing.getWeekly_discount();
+        this.monthly_discount = listing.getMonthly_discount();
+    }
+
     public UUID getId() {
         return id;
     }
