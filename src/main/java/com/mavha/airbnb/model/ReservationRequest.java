@@ -3,6 +3,7 @@ package com.mavha.airbnb.model;
 import java.util.Date;
 
 public class ReservationRequest {
+
     private Date checkin;
     private Date checkout;
 

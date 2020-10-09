@@ -1,6 +1,10 @@
 package com.mavha.airbnb.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -16,15 +20,18 @@ public class SpecialPrice implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-    @ManyToOne(optional = false,cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, targetEntity = Listing.class)
+    @ManyToOne
     @JoinColumn(name = "listing_id")
-    private String listing_id;
+    @JsonIgnore
+    private Listing listing;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date date;
     @NotNull
     private double price;
+    //private String listingID;
 
     protected SpecialPrice(){
     }
@@ -37,14 +44,22 @@ public class SpecialPrice implements Serializable {
         this.id = id;
     }
 
-    public String getListing_id() {
+    public Listing getListing() {
+        return listing;
+    }
+
+    public void setListing(Listing listing) {
+        this.listing = listing;
+    }
+
+  /*  public String getListing_id() {
         return listing_id;
     }
 
     public void setListing_id(String listing_id) {
         this.listing_id = listing_id;
     }
-
+*/
     public Date getDate() {
         return date;
     }

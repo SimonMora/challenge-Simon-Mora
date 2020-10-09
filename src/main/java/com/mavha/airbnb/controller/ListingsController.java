@@ -2,65 +2,91 @@ package com.mavha.airbnb.controller;
 
 import com.mavha.airbnb.model.Listing;
 import com.mavha.airbnb.model.ReservationRequest;
+import com.mavha.airbnb.model.ReservationResponse;
 import com.mavha.airbnb.model.SpecialPrice;
+import com.mavha.airbnb.service.ListingService;
+import com.mavha.airbnb.service.ReservationService;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class ListingsController {
 
+    private ListingService listingService;
+
+    private ReservationService reservationService;
+
     @PostMapping(path="/listings",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> createNewListing(@RequestHeader Map<String,Object> headers,
+    public ResponseEntity<Listing> createNewListing(@RequestHeader Map<String,Object> headers,
                                                        @RequestBody Listing body){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+        return listingService.createNewListing(body);
     }
 
-    @GetMapping(path="/listings",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> showAllListing(@RequestHeader Map<String,Object> headers){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+    @GetMapping(path="/listings")
+    public ResponseEntity<List<Listing>> showAllListing(@RequestHeader Map<String,Object> headers){
+        return listingService.retrieveAllListings();
     }
 
-    @GetMapping(path="/listings/:{listing_id}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> showListing(@RequestHeader Map<String,Object> headers,
-                                                  @PathVariable("listing") String listing_id){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+    @GetMapping(path="/listings/{listing_id}")
+    public ResponseEntity<Listing> showListing(@RequestHeader Map<String,Object> headers,
+                                                  @PathVariable("listing_id") String listing_id){
+        return listingService.retrieveOneListing(listing_id);
     }
 
-    @PutMapping(path="/listings/:{listing_id}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> updateAListing(@RequestHeader Map<String,Object> headers,
+    @PutMapping(path="/listings/{listing_id}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Listing> updateAListing(@RequestHeader Map<String,Object> headers,
+                                                     @PathVariable("listing_id") String listing_id,
+                                                     @RequestBody Listing listing){
+        return listingService.modifyOneListing(listing_id,listing);
+    }
+
+    @DeleteMapping(path="/listings/{listing_id}")
+    public ResponseEntity<String> deleteAListing(@RequestHeader Map<String,Object> headers,
                                                      @PathVariable("listing_id") String listing_id){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+        return listingService.deleteOneListing(listing_id);
     }
 
-    @DeleteMapping(path="/listings/:{listing_id}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> deleteAListing(@RequestHeader Map<String,Object> headers,
-                                                     @PathVariable("listing_id") String listing_id){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
-    }
-
-    @PostMapping(path="/listings/:{listing_id}/special-prices",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> addSpecialPriceToListing(@RequestHeader Map<String,Object> headers,
+    @PostMapping(path="/listings/{listing_id}/special-prices",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SpecialPrice> addSpecialPriceToListing(@RequestHeader Map<String,Object> headers,
                                                                @PathVariable("listing_id") String listing_id,
                                                                @RequestBody SpecialPrice body){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+        return listingService.addSpecialPriceToListing(listing_id,body);
     }
 
-    @DeleteMapping(path="/listings/:{listing_id}/special-prices/:uuid",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> deleteSpecialPrice(@RequestHeader Map<String,Object> headers,
-                                                         @PathVariable("listing_id") String listing_id){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+    @DeleteMapping(path="/listings/{listing_id}/special-prices/{specialPrice_id}")
+    public ResponseEntity<String> deleteSpecialPrice(@RequestHeader Map<String,Object> headers,
+                                                         @PathVariable("listing_id") String listing_id,
+                                                         @PathVariable("specialPrice_id") String specialPrice_id){
+        return listingService.deleteSpecialPrice(specialPrice_id);
     }
 
-    @GetMapping(path="/listings/:uuid/checkout",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JSONObject> calculateReservationCost(@RequestHeader Map<String,Object> headers,
-                                                               @RequestBody ReservationRequest body){
-        return new ResponseEntity<>(new JSONObject(), HttpStatus.CREATED);
+    @GetMapping(path="/listings/{listing_id}/checkout",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReservationResponse> calculateReservationCost(@RequestHeader Map<String,Object> headers,
+                                                                        @PathVariable("listing_id") String listing_id,
+                                                                        @RequestBody ReservationRequest body){
+        return reservationService.createAReservation(body,listing_id);
     }
 
+
+    @Autowired
+    @Qualifier("listingServiceImpl")
+    public void setListingService(ListingService listingService) {
+        this.listingService = listingService;
+    }
+
+
+    @Autowired
+    @Qualifier("reservationServiceImpl")
+    public void setReservationService(ReservationService reservationService) {
+        this.reservationService = reservationService;
+    }
 }

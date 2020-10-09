@@ -2,15 +2,14 @@ package com.mavha.airbnb.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -18,27 +17,33 @@ import java.util.UUID;
 @JsonIgnoreProperties
 public class User implements Serializable {
 
-
-    @GeneratedValue(generator = "UUID")
-    @Column(name="user_id")
     @Id
-    private UUID id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(columnDefinition = "BINARY(16)")
+    private UUID userID;
     @NotNull
     private String name;
     @Email
     private String email;
     @NotNull
     private String password;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="owner_id")
+    private List<Listing> listings;
 
     public User() {
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getUserID() {
+        return userID;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setUserID(UUID userID) {
+        this.userID = userID;
     }
 
     public String getName() {
@@ -65,13 +70,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+    public List<Listing> getListings() {
+        return listings;
+    }
+
+    public void setListings(List<Listing> listings) {
+        this.listings = listings;
     }
 }

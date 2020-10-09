@@ -1,11 +1,15 @@
 package com.mavha.airbnb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -15,12 +19,14 @@ public class Listing implements Serializable {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @Column(name = "listing_id")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-    @ManyToOne(optional = false,cascade = CascadeType.ALL,
-    fetch = FetchType.EAGER, targetEntity = User.class)
-    @JoinColumn(name = "user_id")
-    private String owner_id;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    @JsonIgnore
+    private User owner;
+    @NotNull
+    private String name;
     private String slug;
     private String description;
     @NotNull
@@ -30,11 +36,14 @@ public class Listing implements Serializable {
     private boolean is_pets_allowed;
     @NotNull
     private double base_price;
-    @NotEmpty
+    @NotNull
     private double cleaning_fee;
     private String image_url;
     private double weekly_discount;
     private double monthly_discount;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="listing_id")
+    private List<SpecialPrice> special_prices;
 
     protected Listing() {
     }
@@ -47,12 +56,29 @@ public class Listing implements Serializable {
         this.id = id;
     }
 
-    public String getOwner_id() {
-        return owner_id;
+    public List<SpecialPrice> getSpecial_prices() {
+        return special_prices;
     }
 
-    public void setOwner_id(String owner_id) {
-        this.owner_id = owner_id;
+    public void setSpecial_prices(List<SpecialPrice> special_prices) {
+        this.special_prices = special_prices;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public String getSlug() {
